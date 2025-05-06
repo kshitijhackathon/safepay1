@@ -1,0 +1,19 @@
+# Port Configuration for .replit file
+# IMPORTANT: Copy these settings to your .replit file using the Replit UI
+
+# Clear any existing port configurations and use only these:
+[[ports]]
+localPort = 5000
+externalPort = 80
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
+
+[[ports]]
+localPort = 8082
+externalPort = 8082
+
+[[ports]]
+localPort = 8083
+externalPort = 8083

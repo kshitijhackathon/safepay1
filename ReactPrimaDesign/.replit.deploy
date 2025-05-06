@@ -1,0 +1,105 @@
+# Exclude large directories and unnecessary files for deployment
+exclude = [
+  # Test and sample data
+  "data/",
+  "mydata.zip",
+  "attached_assets/*.mp4",
+  "attached_assets/*.wav",
+  "attached_assets/*.mp3",
+  "attached_assets/*.mov",
+  "attached_assets/*.json",
+  "attached_assets/*.csv",
+  "attached_assets/*.png",
+  "attached_assets/*.jpg",
+  
+  # Development files
+  ".github/",
+  ".vscode/",
+  "Dockerfile",
+  "docker-compose.yml",
+  ".dockerignore",
+  "VSCODE_DEVELOPMENT.md",
+  "PULL_REQUEST_TEMPLATE.md",
+  
+  # Cache files
+  ".cache/",
+  "cache/",
+  "prediction_cache/",
+  "node_modules/.cache/",
+  
+  # Python library files (will be reinstalled during deployment)
+  ".pythonlibs/",
+  
+  # Test files
+  "test_*.py",
+  "measure_*.py",
+  "quick_test.py",
+  "verify_*.py",
+  "*_test.py",
+  
+  # Large model files
+  "*.joblib",
+  "*.h5",
+  "*.pkl",
+  "*.pt",
+  "*.pth",
+  "*.onnx",
+  
+  # Logs
+  "*.log",
+  "qr_service.log",
+  
+  # Node modules (will be reinstalled during deployment)
+  "node_modules/"
+]
+
+# Include only necessary files
+include = [
+  # Core application files
+  "client/",
+  "server/",
+  "shared/",
+  "models/",
+  
+  # Configuration files
+  "package.json",
+  "package-lock.json",
+  "pyproject.toml",
+  "tsconfig.json",
+  "vite.config.ts",
+  "tailwind.config.ts",
+  "postcss.config.js",
+  
+  # Important Python services
+  "voice_text_scam_service.py",
+  "voice_text_scam_model.py",
+  "video_detection.py",
+  "qr_scan_ml_service.py",
+  "qr_risk_detection_model.py",
+  
+  # Documentation
+  "README.md",
+  "LICENSE",
+  "CONTRIBUTING.md",
+  "SECURITY.md",
+  ".env.example",
+  
+  # Assets
+  "theme.json",
+  "generated-icon.png"
+]
+
+# Run command for deployment
+run = "npm run start"
+
+# Workflow configuration
+[workflow]
+defaultPort = 5000
+
+# Environment variables for deployment
+[env]
+PORT = "5000"
+NODE_ENV = "production"
+ML_QR_SERVICE_PORT = "8081"
+ML_VOICE_TEXT_SERVICE_PORT = "8082"
+ML_VIDEO_SERVICE_PORT = "8083"

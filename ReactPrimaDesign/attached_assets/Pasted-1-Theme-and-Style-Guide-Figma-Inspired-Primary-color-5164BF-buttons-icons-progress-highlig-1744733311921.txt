@@ -1,0 +1,305 @@
+1. Theme and Style Guide (Figma-Inspired)
+Primary color: #5164BF (buttons, icons, progress, highlights)
+
+Background: #FFFFFF (main), #F5F6FA (cards, input backgrounds)
+
+Accent: #FFB300 (warnings), #E53935 (errors), #43A047 (success)
+
+Typography: Large, bold headings; regular, readable body text; use system font or Google Fonts (e.g., Inter, Roboto)
+
+Buttons: Rounded, filled with #5164BF, white text, large touch area
+
+Inputs: Rounded, soft shadow, subtle border, large font
+
+Cards: Rounded corners, soft drop shadow, white background
+
+Progress: Circular progress bars for risk, with color coding
+
+Icons: Simple, line or filled, matching the Figma style
+
+Spacing: Generous padding and margin, especially for touch targets
+
+Feedback: Subtle animations, checkmarks, and progress indicators
+
+2. Navigation Structure
+Bottom tab bar with icons and labels: Home, Heatmap, Report, History, Account
+
+Stack navigation for flows (login, scan, report, etc.)
+
+Header: Minimal, with only essential info or icons
+
+3. Screen-by-Screen UI Breakdown (Based on Your Images)
+A. Sign Up / Login Screen
+Elements:
+
+Large “Sign Up” or “Login” title, left-aligned
+
+Phone number input (rounded, with subtle shadow)
+
+“Sign Up” button (large, rounded, #5164BF)
+
+Style: Minimal, lots of white space, centered vertically
+
+B. OTP Verification Screen
+Elements:
+
+“Enter OTP” title
+
+6-digit OTP input (spaced, rounded boxes, #5164BF border for active)
+
+“Verify” button (rounded, #5164BF)
+
+Style: Clean, centered, with subtle progress indicator if needed
+
+C. PIN/Passcode Entry Screen
+Elements:
+
+Numeric keypad (large, circular buttons, #5164BF for numbers, black for delete)
+
+“Set PIN” or “Enter PIN” title
+
+Style: Centered, keypad at bottom, large touch targets
+
+D. QR Scanner Screen
+Elements:
+
+Full-screen camera view, dark overlay with rounded scan area
+
+Flashlight and close icons at bottom
+
+Style: Minimal, focus on scan area, icons spaced and rounded
+
+E. Payment Details / Amount Entry
+Elements:
+
+UPI ID and merchant info (rounded card)
+
+Amount input (large, rounded, centered)
+
+“Proceed” button (rounded, #5164BF)
+
+Style: Card in center, lots of white space
+
+F. Success / Confirmation Screen
+Elements:
+
+Large checkmark in circle (#5164BF)
+
+“Congrats!” or “Success” title
+
+“Proceed” button (rounded)
+
+Style: Centered, celebratory, minimal
+
+G. UPI Risk Check Screen
+Elements:
+
+UPI ID input (rounded)
+
+“Check Risk” button
+
+Circular progress bar showing risk % (color-coded: green/yellow/red)
+
+Text: “X reports / Y total”
+
+Style: Card with progress bar, clean and centered
+
+H. Report Scam Screen
+Elements:
+
+UPI ID input (rounded)
+
+Scam type dropdown (rounded)
+
+Amount lost input
+
+Description (multiline, rounded)
+
+Screenshot upload (rounded card, preview)
+
+“Submit Report” button (rounded, #5164BF)
+
+Style: Stacked, lots of space, clear sectioning
+
+I. Voice Scam Detection Screen
+Elements:
+
+“Start Recording” button (large, rounded, #5164BF)
+
+Voice wave animation (centered, subtle)
+
+Transcript output (rounded card)
+
+Result card: “SAFE” or “SUSPICIOUS” (large, bold, color-coded)
+
+Style: Centered, minimal, focus on animation and result
+
+J. WhatsApp/SMS Screenshot Upload Screen
+Elements:
+
+Image upload field (rounded card, camera/gallery icon)
+
+OCR text preview (rounded card)
+
+Scam check result card (“SAFE”/“SUSPICIOUS”)
+
+“Report Sender” button
+
+Style: Stacked, clean, clear separation
+
+K. History Screen
+Elements:
+
+List of payments (rounded cards, icon, UPI ID, amount, status)
+
+Filter/search bar (rounded)
+
+Style: List with spacing, icons, and clear status
+
+L. Footer Navigation
+Elements:
+
+5 icons: Home, Heatmap, Report, History, Account
+
+Active tab: #5164BF, others gray
+
+Rounded, floating effect if possible
+
+Style: Fixed at bottom, large icons, labels below
+
+4. Component Structure (Figma-Style)
+/components
+
+RoundedButton.js (primary, secondary, disabled)
+
+RoundedInput.js (phone, OTP, UPI, amount)
+
+PinPad.js (circular keys)
+
+ProgressCircle.js (risk %)
+
+Card.js (for info, alerts, history)
+
+VoiceWave.js (animated)
+
+FooterNav.js (tab bar, icons)
+
+ImageUpload.js (rounded, preview)
+
+ListItem.js (history, alerts)
+
+/screens
+
+LoginScreen.js
+
+OtpScreen.js
+
+PinScreen.js
+
+ScanScreen.js
+
+AmountScreen.js
+
+SuccessScreen.js
+
+UpiRiskScreen.js
+
+ReportScamScreen.js
+
+VoiceDetectionScreen.js
+
+ScreenshotUploadScreen.js
+
+HistoryScreen.js
+
+AccountScreen.js
+
+5. Sample Component Code (Figma-Style)
+jsx
+// RoundedButton.js
+import React from 'react';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
+
+export default function RoundedButton({ title, onPress, disabled }) {
+  return (
+    <TouchableOpacity
+      style={[styles.button, disabled && styles.disabled]}
+      onPress={onPress}
+      disabled={disabled}
+    >
+      <Text style={styles.text}>{title}</Text>
+    </TouchableOpacity>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    backgroundColor: '#5164BF',
+    borderRadius: 30,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    alignItems: 'center',
+    marginVertical: 12,
+    shadowColor: '#5164BF',
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  disabled: {
+    backgroundColor: '#B0B8D1',
+  },
+  text: {
+    color: '#FFF',
+    fontWeight: 'bold',
+    fontSize: 18,
+  },
+});
+6. UI/UX Best Practices (Figma-Style)
+Minimalism: Lots of white space, only essential info per screen
+
+Rounded everything: Buttons, inputs, cards, progress bars
+
+Large touch targets: For all buttons and inputs
+
+Consistent color: #5164BF for all primary actions and highlights
+
+Feedback: Subtle checkmarks, progress, and error/success states
+
+Accessibility: High contrast, large fonts, clear labels
+
+7. Screen Flow (Based on Images)
+Sign Up/Login → OTP → PIN → Home
+
+Home:
+
+Scan & Pay (QR → Amount → Success)
+
+UPI Risk Check (input → result)
+
+Report Scam (form → submit)
+
+Voice Scam Detection (record → result)
+
+WhatsApp/SMS Screenshot (upload → result)
+
+History (list)
+
+Account (profile/settings)
+
+Footer navigation always visible
+
+8. Mock Data and State
+Use React state/hooks for all flows
+
+Mock data for risk %, scam alerts, history, etc.
+
+No backend/API calls; all data is local
+
+9. Accessibility and Responsiveness
+All touch targets ≥48x48px
+
+Use ScrollView for long forms/lists
+
+Responsive layouts using flex and Dimensions
+
+Test on multiple device sizes in Expo Go

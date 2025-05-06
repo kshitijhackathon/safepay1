@@ -1,0 +1,217 @@
+1. Project Overview
+Develop a secure, scalable, and high-performance backend system for a mobile/web application that allows users to:
+
+Sign up/login using their phone number (OTP-based authentication).
+
+Receive a 6-digit OTP via SMS (using a third-party SMS gateway).
+
+Verify the OTP to complete registration/login.
+
+Enable biometric (fingerprint/face scan) or PIN-based authentication for returning users.
+
+Maintain persistent sessions so users don’t need to log in repeatedly.
+
+Securely store user data while complying with privacy laws (GDPR, CCPA).
+
+2. Technical Stack
+Core Backend Technologies
+Component	Technology	Purpose
+Backend Framework	Express.js (Node.js) / Fastify	API development
+Database (Primary)	MongoDB (NoSQL)	Store user profiles, preferences
+Cache & Session Store	Redis	OTP storage, rate limiting, session management
+Authentication	JWT (JSON Web Tokens) + Redis Sessions	Secure stateless auth
+OTP Service	Twilio / AWS SNS / MSG91	SMS delivery
+Biometrics	WebAuthn (for web) / React Native Biometrics (for mobile)	Fingerprint/Face ID auth
+Security	Helmet, Rate Limiter, CORS	API protection
+Logging & Monitoring	Winston + ELK Stack / Grafana	Debugging & analytics
+Testing	Jest + Supertest	Unit & integration tests
+3. Detailed System Architecture
+A. User Registration & OTP Flow
+Step 1: User Submits Phone Number
+API Endpoint: POST /auth/request-otp
+
+Request Body:
+
+json
+Copy
+{ "phone": "+919876543210" }
+Backend Actions:
+
+Validate phone number (E.164 format).
+
+Check if the user exists (MongoDB lookup).
+
+Generate a 6-digit OTP (cryptographically secure random number).
+
+Store OTP in Redis (with phone hash as key, expiry: 5 mins).
+
+Send OTP via SMS (Twilio/Amazon SNS).
+
+Log the request (for security audits).
+
+Step 2: User Verifies OTP
+API Endpoint: POST /auth/verify-otp
+
+Request Body:
+
+json
+Copy
+{ "phone": "+919876543210", "otp": "123456" }
+Backend Actions:
+
+Verify OTP (check Redis for match).
+
+If valid:
+
+Create a new user (if first-time login).
+
+Generate a JWT token (expiry: 30 days).
+
+Store session in Redis (user:sessions:{userId}).
+
+Return success + token.
+
+If invalid:
+
+Block after 3 failed attempts (rate limiting).
+
+Step 3: Post-Login Biometric Setup (Optional)
+API Endpoint: POST /auth/enable-biometric
+
+Request Body:
+
+json
+Copy
+{ "biometricData": "WEBAUTHN_CREDENTIALS" }
+Backend Actions:
+
+Store biometric public key (MongoDB).
+
+Mark user as biometric-enabled.
+
+B. Returning User Authentication (Biometric/PIN Flow)
+Step 1: Check for Existing Session
+API Endpoint: GET /auth/check-session
+
+Headers: Authorization: Bearer <JWT>
+
+Backend Actions:
+
+Verify JWT.
+
+Check Redis for active session.
+
+If valid:
+
+Prompt for biometric/PIN (if enabled).
+
+Grant access on success.
+
+Step 2: Biometric Verification
+API Endpoint: POST /auth/verify-biometric
+
+Request Body:
+
+json
+Copy
+{ "assertion": "WEBAUTHN_RESPONSE" }
+Backend Actions:
+
+Verify biometric signature (using stored public key).
+
+If valid:
+
+Renew JWT token.
+
+Update last login time.
+
+Redirect to home page.
+
+4. Database Schemas
+MongoDB Collections
+1. users Collection
+javascript
+Copy
+{
+  _id: ObjectId,
+  phone: { type: String, unique: true, index: true },
+  authMethods: {
+    pin: { type: String, select: false }, // bcrypt hash
+    biometric: { type: Boolean, default: false },
+    publicKey: { type: String, select: false } // WebAuthn public key
+  },
+  createdAt: Date,
+  lastLogin: Date,
+  devices: [{
+    fingerprint: String,
+    lastUsed: Date
+  }]
+}
+2. Redis Data Structure
+OTP Storage:
+
+bash
+Copy
+SET otp:phone_hash "123456" EX 300 NX
+Session Storage:
+
+bash
+Copy
+HSET user:sessions:{userId} token "JWT" lastAuth "2025-04-16T12:00:00Z"
+5. Security & Compliance
+A. OTP Security Measures
+Rate limiting: Max 3 OTP requests per phone per hour.
+
+OTP hashing: Store SHA-256 hash (not plaintext).
+
+SMS fraud detection: Block VOIP numbers (Twilio carrier lookup).
+
+B. Biometric Data Handling
+Never store raw biometrics (only public keys).
+
+Use hardware-backed storage (Android Keystore / iOS Keychain).
+
+C. GDPR Compliance
+Anonymize logs.
+
+Allow user data deletion (DELETE /user endpoint).
+
+6. API Documentation (Swagger/OpenAPI)
+Include detailed API specs for:
+
+/auth/request-otp
+
+/auth/verify-otp
+
+/auth/enable-biometric
+
+/auth/verify-biometric
+
+7. Testing & Deployment
+A. Automated Tests
+Unit Tests: Mock Redis/MongoDB (Jest).
+
+Integration Tests: Test full OTP flow (Supertest).
+
+B. Deployment Strategy
+Dockerized (for consistency).
+
+Kubernetes (scalability).
+
+CI/CD: GitHub Actions.
+
+8. Future Enhancements
+Magic Links (alternative to OTP).
+
+Device Trust Scoring (detect suspicious logins).
+
+Voice OTP (for accessibility).
+
+Final Deliverables
+✅ Fully functional OTP-based auth system
+✅ Biometric/PIN login for returning users
+✅ Secure session management
+✅ Fraud prevention mechanisms
+✅ Comprehensive API documentation
+
+This prompt provides everything a backend developer needs to build the system. Let me know if you need any refinements! 🚀

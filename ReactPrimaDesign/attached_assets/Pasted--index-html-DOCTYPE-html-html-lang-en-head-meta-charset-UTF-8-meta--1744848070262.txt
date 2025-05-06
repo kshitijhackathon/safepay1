@@ -1,0 +1,79 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>UPI QR Scanner</title>
+  <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+</head>
+<body>
+  <h1>🔍 UPI QR Code Scanner</h1>
+  <div id="reader" style="width: 300px;"></div>
+  <div id="result" style="margin-top: 20px; font-size: 1.2rem;"></div>
+
+  <script>
+    function parseUPI(text) {
+      if (!text.startsWith("upi://pay")) return null;
+
+      const url = new URL(text);
+      const params = new URLSearchParams(url.search);
+
+      return {
+        upi_id: params.get("pa"),
+        name: params.get("pn"),
+        amount: params.get("am"),
+        currency: params.get("cu"),
+      };
+    }
+
+    function showResult(decodedText) {
+      const data = parseUPI(decodedText);
+      const resultDiv = document.getElementById("result");
+
+      if (data) {
+        resultDiv.innerHTML = `
+          ✅ <strong>Valid UPI QR Code Detected</strong><br>
+          🧾 Name: ${data.name || 'N/A'} <br>
+          💸 UPI ID: ${data.upi_id} <br>
+          💰 Amount: ₹${data.amount || 'N/A'} <br>
+          💱 Currency: ${data.currency || 'INR'}
+        `;
+      } else {
+        resultDiv.innerHTML = "⚠️ Not a valid UPI QR code.";
+      }
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras && cameras.length) {
+        html5QrCode.start(
+          cameras[0].id,
+          {
+            fps: 10,
+            qrbox: 250
+          },
+          decodedText => {
+            html5QrCode.stop(); // stop after one scan
+            showResult(decodedText);
+          },
+          errorMessage => {
+            // ignore scan errors
+          }
+        );
+      }
+    }).catch(err => {
+      console.error("Camera error: ", err);
+    });
+  </script>
+</body>
+</html>
+User clicks on 📷 Scan QR button
+
+Camera opens and starts scanning
+
+Jaise hi UPI QR milta hai, scanning band ho jaati hai
+
+Extracted details (UPI ID, Name, Amount) dikh jaate hai screen pe 🎯
+jo upi id par jayega usi pr fir payment send krne ka option ayega 

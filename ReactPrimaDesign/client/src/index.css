@@ -1,0 +1,206 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-white text-foreground min-h-screen transition-colors duration-300;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Dark mode styles */
+  .dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+  
+  /* Consistent dark theme across the app */
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    
+    --card: 222.2 84% 9.8%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 221.2 83.2% 53.3%;
+    --primary-foreground: 210 40% 98%;
+    
+    --secondary: 217.2 32.6% 15.7%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+    
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 224.3 76.3% 48%;
+  }
+}
+
+@layer components {
+  .screen {
+    @apply min-h-[calc(100vh-72px)] w-full pb-[72px];
+  }
+
+  .bottom-nav-button {
+    @apply flex flex-col items-center px-2 py-1;
+  }
+
+  .bottom-nav-button svg {
+    @apply w-6 h-6;
+  }
+
+  .bottom-nav-button span {
+    @apply text-xs mt-1;
+  }
+
+  .pin-button {
+    @apply w-16 h-16 rounded-full flex items-center justify-center text-2xl font-semibold bg-[#F5F6FA] dark:bg-gray-800;
+  }
+
+  .pin-dot {
+    @apply w-4 h-4 rounded-full bg-gray-300 dark:bg-gray-600 mx-1.5 transition-all duration-300;
+  }
+
+  .pin-dot.filled {
+    @apply bg-primary transform scale-110;
+  }
+  
+  .pin-dot.animate-ping {
+    animation: pin-reset 0.3s ease-in-out;
+  }
+  
+  @keyframes pin-reset {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.5;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+  
+  /* Dark mode component styles */
+  .dark .card {
+    @apply bg-gray-800 border-gray-700;
+  }
+  
+  .dark .bg-secondary {
+    @apply bg-gray-800;
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbar for mobile devices while maintaining functionality */
+  .hide-scrollbar::-webkit-scrollbar {
+    width: 0px;
+    height: 0px;
+    background: transparent;
+  }
+  
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .bg-secondary {
+    @apply bg-[#F5F6FA] dark:bg-gray-800;
+  }
+
+  .text-success {
+    @apply text-[#43A047] dark:text-[#66BB6A];
+  }
+
+  .text-error {
+    @apply text-[#E53935] dark:text-[#EF5350];
+  }
+
+  .text-warning {
+    @apply text-[#FFB300] dark:text-[#FFCA28];
+  }
+
+  .bg-success-light {
+    @apply bg-[#43A047]/10 dark:bg-[#43A047]/20;
+  }
+
+  .bg-error-light {
+    @apply bg-[#E53935]/10 dark:bg-[#E53935]/20;
+  }
+
+  .bg-warning-light {
+    @apply bg-[#FFB300]/10 dark:bg-[#FFB300]/20;
+  }
+
+  .bg-primary-light {
+    @apply bg-primary/10 dark:bg-primary/20;
+  }
+  
+  /* Dark Mode Card and UI Element Styles */
+  .dark-card {
+    @apply bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm transition-colors duration-300;
+  }
+  
+  .dark-input {
+    @apply bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 focus:ring-primary focus:border-primary transition-colors duration-300;
+  }
+  
+  .dark-button {
+    @apply transition-colors duration-300;
+  }
+  
+  /* Consistent dark mode colors */
+  .dark-bg-primary {
+    @apply bg-white dark:bg-gray-900 transition-colors duration-300;
+  }
+  
+  .dark-bg-secondary {
+    @apply bg-slate-50 dark:bg-gray-800 transition-colors duration-300;
+  }
+  
+  .dark-bg-tertiary {
+    @apply bg-blue-50 dark:bg-blue-900/30 transition-colors duration-300;
+  }
+  
+  .dark-text-primary {
+    @apply text-black dark:text-white transition-colors duration-300;
+  }
+  
+  .dark-text-secondary {
+    @apply text-gray-700 dark:text-gray-200 transition-colors duration-300;
+  }
+  
+  .dark-text-tertiary {
+    @apply text-gray-600 dark:text-gray-300 transition-colors duration-300;
+  }
+  
+  .dark-border {
+    @apply border-gray-200 dark:border-gray-700 transition-colors duration-300;
+  }
+}

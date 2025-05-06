@@ -1,0 +1,96 @@
+name: SafePay CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+        python-version: [3.11]
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+    
+    - name: Install Node.js dependencies
+      run: npm ci
+    
+    - name: Install Python dependencies
+      run: pip install -e .
+    
+    - name: Check TypeScript
+      run: npm run check
+    
+    - name: Build
+      run: npm run build
+    
+    - name: Setup PostgreSQL
+      uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '14'
+        postgresql db: safepay_db
+        postgresql user: postgres
+        postgresql password: postgres
+    
+    - name: Set up environment variables
+      run: |
+        echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/safepay_db" >> $GITHUB_ENV
+        echo "PGHOST=localhost" >> $GITHUB_ENV
+        echo "PGPORT=5432" >> $GITHUB_ENV
+        echo "PGUSER=postgres" >> $GITHUB_ENV
+        echo "PGPASSWORD=postgres" >> $GITHUB_ENV
+        echo "PGDATABASE=safepay_db" >> $GITHUB_ENV
+        echo "SESSION_SECRET=test_session_secret" >> $GITHUB_ENV
+    
+    - name: Apply database schema
+      run: npm run db:push
+    
+    - name: Run Python linting
+      run: |
+        pip install pylint
+        pylint *.py --disable=all --enable=F,E --ignore=venv
+    
+    - name: Cache ML models
+      uses: actions/cache@v3
+      with:
+        path: |
+          models/
+          prediction_cache/
+        key: ${{ runner.os }}-ml-models-${{ hashFiles('**/pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-ml-models-
+
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to Replit
+      uses: wei/git@v1
+      with:
+        args: push https://${{ secrets.REPLIT_TOKEN }}@github.com/replit/${{ github.repository }}.git HEAD:main --force
+    
+    - name: Notify deployment
+      run: |
+        echo "Deployed to Replit"

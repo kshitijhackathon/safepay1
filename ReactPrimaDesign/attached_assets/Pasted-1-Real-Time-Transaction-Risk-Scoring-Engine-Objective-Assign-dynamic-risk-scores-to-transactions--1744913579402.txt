@@ -1,0 +1,146 @@
+1. Real-Time Transaction Risk Scoring Engine
+Objective: Assign dynamic risk scores to transactions in real time using machine learning, behavioral biometrics, and network analysis to detect anomalies and fraud patterns.
+
+Technical Workflow Breakdown
+A. Ensemble Machine Learning Models
+The engine combines multiple models to balance accuracy, speed, and anomaly detection:
+
+XGBoost/LightGBM (Supervised Learning):
+
+Role: Analyze structured transaction features (amount, location, time).
+
+Training: Uses labeled historical data (fraudulent vs. legitimate transactions).
+
+Example: Predicts risk based on patterns like "high-value transactions at unusual times."
+
+Isolation Forest (Unsupervised Anomaly Detection):
+
+Role: Identify outliers in transaction amounts or frequencies.
+
+Mechanism: Randomly partitions data into "trees." Transactions requiring fewer splits to isolate are flagged as anomalies.
+
+Example: A user who typically spends ₹500/day suddenly initiates a ₹1,00,000 transfer → flagged as outlier.
+
+Neural Networks (Deep Learning):
+
+Role: Process unstructured data (e.g., transaction notes like "urgent loan payment").
+
+Architecture: Recurrent Neural Networks (RNNs) for text analysis, Convolutional Neural Networks (CNNs) for image-based data (e.g., QR codes).
+
+B. Feature Engineering
+Key features engineered for the models:
+
+Temporal Features:
+
+Time since last transaction (e.g., a user making 10 transactions in 5 minutes).
+
+Rolling transaction frequency (e.g., average 3 transactions/day vs. sudden 20/day).
+
+Geospatial Features:
+
+Haversine Distance: Calculate distance between user’s current location and their usual transaction zone.
+
+Formula:
+
+Copy
+a = sin²(Δφ/2) + cosφ1 * cosφ2 * sin²(Δλ/2)  
+distance = 2R * atan2(√a, √(1−a))  
+Example: A user usually transacts in Delhi but initiates a payment from Chennai → flagged.
+
+Network Features:
+
+Transaction Graph Analysis: Build a graph where nodes are accounts/devices, and edges represent transactions.
+
+Degree Centrality: Accounts connected to many others (potential mule accounts).
+
+Clustering Coefficient: Detect tightly-knit fraud rings (e.g., money laundering cycles).
+
+C. Behavioral Biometrics
+Track subtle user behavior to distinguish humans from bots:
+
+Typing Speed:
+
+Measure time between keystrokes during PIN entry.
+
+Fraudsters using automated scripts often type faster (e.g., 100ms vs. 500ms for humans).
+
+Device Tilt/Gyroscope Data:
+
+Humans tilt phones naturally while typing; bots show no movement.
+
+Touch Pressure:
+
+Capacitive sensors detect pressure. Bots may simulate taps with uniform pressure.
+
+User Profiling:
+
+Build a 30-day baseline for each user (e.g., average transaction amount, typical recipients).
+
+Flag deviations using Z-score:
+
+Copy
+Z = (Current Value - Mean) / Standard Deviation  
+A Z-score > 3 indicates high anomaly (e.g., ₹50,000 vs. usual ₹500).
+
+D. Device Fingerprinting
+Identify devices to detect unauthorized access:
+
+Hardware Parameters:
+
+IMEI (unique device ID), MAC address, processor type.
+
+Software Parameters:
+
+Installed fonts, browser plugins, screen resolution.
+
+Risk Rules:
+
+New device + high-value transaction → block and trigger OTP.
+
+VPN usage + foreign IP → flag for manual review.
+
+E. Graph Neural Networks (GNNs)
+Map transaction networks to detect complex fraud patterns:
+
+Graph Construction:
+
+Nodes: Users, accounts, devices.
+
+Edges: Transactions, shared IPs, linked phone numbers.
+
+Fraud Detection:
+
+Mule Accounts: Nodes with high in-degree (receiving funds from many unrelated accounts).
+
+Cycle Detection: Transactions like A → B → C → A (common in money laundering).
+
+Example Scenario
+User Action: A user who usually sends ₹500/day initiates a ₹50,000 transfer to a new account.
+Detection Steps:
+
+Isolation Forest flags the amount as an outlier (99th percentile).
+
+Device Fingerprinting shows the transaction is from a new phone (IMEI not in 30-day history).
+
+GNN Analysis reveals the recipient account is linked to 10 other flagged accounts.
+
+Action: System blocks the transaction and sends an SMS: "Suspicious activity detected. Confirm via OTP."
+
+Challenges & Solutions
+Data Imbalance:
+
+Fraud cases are rare (e.g., 0.1% of transactions).
+
+Solution: Use SMOTE (Synthetic Minority Oversampling) to generate synthetic fraud samples.
+
+Model Drift:
+
+Fraud patterns evolve over time (e.g., new scam tactics).
+
+Solution: Retrain models weekly using fresh data.
+
+Scalability:
+
+Processing millions of transactions in real time.
+
+Solution: Deploy on AWS SageMaker with auto-scaling.

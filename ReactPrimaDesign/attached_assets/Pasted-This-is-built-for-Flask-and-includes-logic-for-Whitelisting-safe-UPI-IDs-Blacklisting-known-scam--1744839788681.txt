@@ -1,0 +1,123 @@
+This is built for Flask and includes logic for:
+
+Whitelisting safe UPI IDs
+
+Blacklisting known scam IDs
+
+Pattern matching to flag suspicious-looking UPI IDs
+
+Returning clear, structured JSON responses
+
+✅ scam_classifier.py
+python
+Copy
+Edit
+import re
+import json
+
+# Mocked safe and scam UPI IDs
+SAFE_UPI_IDS = {
+    "merchant@axis",
+    "paytm@upi",
+    "googlepay@okicici",
+    "flipkart@icici",
+    "zomato@upi",
+    "bookmyshow@hdfcbank"
+}
+
+SCAM_UPI_IDS = {
+    "fraudpay@upi",
+    "scammer123@okhdfc",
+    "fakepaytm@upi",
+    "1234567890@ybl",
+    "helpdesk@fakebank"
+}
+
+def classify_upi_id(upi_id: str):
+    upi_id = upi_id.strip().lower()
+
+    if upi_id in SAFE_UPI_IDS:
+        return {
+            "status": "SAFE",
+            "reason": "This UPI ID is whitelisted and verified.",
+            "confidence_score": 0.01
+        }
+
+    if upi_id in SCAM_UPI_IDS:
+        return {
+            "status": "SCAM",
+            "reason": "This UPI ID is blacklisted due to scam reports.",
+            "confidence_score": 0.99
+        }
+
+    # Pattern-based suspicion
+    suspicion_patterns = [
+        r'^[0-9]{10}@\w+',              # Mobile number based UPI IDs
+        r'^[a-z]+\d+@ok\w+',            # Alpha-numeric suspicious patterns
+        r'.(support|helpdesk).@.*',   # Fake customer support
+        r'^.@fakemail|fakebank.$'     # Domains known for frauds
+    ]
+
+    for pattern in suspicion_patterns:
+        if re.match(pattern, upi_id):
+            return {
+                "status": "SUSPICIOUS",
+                "reason": f"UPI ID matches suspicious pattern: {pattern}",
+                "confidence_score": 0.75
+            }
+
+    # Unknown - caution
+    return {
+        "status": "SUSPICIOUS",
+        "reason": "This UPI ID is not verified in known databases.",
+        "confidence_score": 0.6
+    }
+
+# Optional: test mode
+def test_classifier():
+    test_ids = [
+        "merchant@axis",        # SAFE
+        "fraudpay@upi",         # SCAM
+        "x7ab12@paytm",         # SUSPICIOUS
+        "helpdesk@fakebank",    # SCAM
+        "1234567890@ybl"        # SCAM
+    ]
+    for upi in test_ids:
+        print(f"Testing {upi} => {json.dumps(classify_upi_id(upi), indent=2)}")
+
+# Uncomment to run test
+# test_classifier()
+✅ How to Use with Flask API
+In your main Flask file:
+
+python
+Copy
+Edit
+from flask import Flask, request, jsonify
+from flask_cors import CORS
+from scam_classifier import classify_upi_id
+
+app = Flask(_name_)
+CORS(app)
+
+@app.route("/check-scam", methods=["POST"])
+def check_scam():
+    data = request.get_json()
+    upi_id = data.get("upi_id")
+
+    if not upi_id:
+        return jsonify({
+            "status": "error",
+            "message": "UPI ID is required"
+        }), 400
+
+    result = classify_upi_id(upi_id)
+    return jsonify(result), 200
+✅ Frontend Display Logic (Short Summary)
+Use the status, reason, and confidence_score from the API response to:
+
+✅ Show green UI for SAFE
+
+⚠ Show yellow UI and warning for SUSPICIOUS
+
+❌ Show red UI and block payment for SCAM

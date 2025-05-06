@@ -1,0 +1,1 @@
+{"X": [{"length": 45, "has_upi": 1, "num_params": 2, "urgent": 0, "payment": 0, "currency": 1}, {"length": 50, "has_upi": 1, "num_params": 3, "urgent": 0, "payment": 0, "currency": 1}, {"length": 80, "has_upi": 0, "num_params": 5, "urgent": 1, "payment": 1, "currency": 0}], "y": [0, 0, 1]}

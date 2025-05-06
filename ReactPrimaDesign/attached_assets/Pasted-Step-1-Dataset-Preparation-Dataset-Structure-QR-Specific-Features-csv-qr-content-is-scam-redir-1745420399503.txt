@@ -1,0 +1,162 @@
+Step 1: Dataset Preparation
+Dataset Structure (QR-Specific Features)
+csv
+qr_content,is_scam,redirect_url,upı_id,creation_date,report_count
+"upi://pay?pa=scammer@ybl",1,"https://malicious.site",scammer@ybl,2024-01-01,12
+"upi://pay?pa=legit@oksbi",0,"https://trustedshop.com",legit@oksbi,2022-05-15,0
+Step 2: Download Dataset in Replit
+python
+import gdown
+import pandas as pd
+
+# Download dataset
+url = 'https://drive.google.com/uc?id=16Hc2TRGOBCmqB5lfTJdVAjvWlVRbaJET'
+output = 'qr_dataset.csv'
+gdown.download(url, output, quiet=False)
+
+# Load data
+df = pd.read_csv(output)
+Step 3: Feature Engineering for QR Analysis
+python
+import re
+from urllib.parse import urlparse
+
+# 1. Extract UPI ID from QR content
+df['upi_id'] = df['qr_content'].apply(lambda x: re.search(r'pa=([\w@.]+)', x).group(1))
+
+# 2. Analyze URL safety
+df['domain'] = df['redirect_url'].apply(lambda x: urlparse(x).netloc)
+df['is_shortened'] = df['redirect_url'].str.contains('bit.ly|goo.gl', regex=True)
+
+# 3. Time-based features
+df['account_age_days'] = (pd.to_datetime('today') - pd.to_datetime(df['creation_date'])).dt.days
+
+# 4. Text patterns
+df['urgency_keywords'] = df['qr_content'].str.contains('urgent|verify|blocked', case=False)
+Step 4: Model Training
+python
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+# Final features
+X = df[['is_shortened', 'account_age_days', 'urgency_keywords', 'report_count']]
+y = df['is_scam']
+
+# Train/test split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+# Train model
+model = RandomForestClassifier(n_estimators=100)
+model.fit(X_train, y_train)
+
+# Evaluate
+preds = model.predict(X_test)
+print(f"Accuracy: {accuracy_score(y_test, preds):.2f}")
+Step 5: Save Model
+python
+import joblib
+joblib.dump(model, 'qr_scam_detector.pkl')
+Step 6: Integrate with QR Scanner
+python
+from flask import Flask, request, jsonify
+import joblib
+
+app = Flask(__name__)
+model = joblib.load('qr_scam_detector.pkl')
+
+def extract_features(qr_data):
+    """Process scanned QR data into model features"""
+    return {
+        'is_shortened': int('bit.ly' in qr_data),
+        'account_age_days': 2,  # Mock - replace with real lookup
+        'urgency_keywords': int(any(word in qr_data for word in ['urgent', 'verify'])),
+        'report_count': 0  # From your database
+    }
+
+@app.route('/scan', methods=['POST'])
+def handle_scan():
+    qr_content = request.json['qr_data']
+    features = extract_features(qr_content)
+    prediction = model.predict([list(features.values())])
+    return jsonify({
+        'is_scam': bool(prediction[0]),
+        'risk_score': model.predict_proba([list(features.values())])[0][1]
+    })
+Step 7: Frontend Integration
+html
+<div id="scanner">
+  <video id="preview"></video>
+  <button onclick="scanQR()">Start Scan</button>
+</div>
+
+<div id="result" style="display:none;">
+  <p>Risk Score: <span id="risk">0%</span></p>
+  <button onclick="blockTransaction()" id="blockBtn">Block Payment</button>
+</div>
+
+<script>
+async function scanQR() {
+  // Use Instascan.js implementation
+  const result = await fetch('/scan', {
+    method: 'POST',
+    body: JSON.stringify({qr_data: "upi://pay?pa=scammer@ybl"})
+  });
+  
+  const data = await result.json();
+  document.getElementById('risk').textContent = `${(data.risk_score * 100).toFixed(1)}%`;
+  document.getElementById('result').style.display = 'block';
+}
+</script>
+Key Features for Hackathon Demo
+Real-Time Risk Visualization
+
+javascript
+// Animate risk score
+function animateRisk(score) {
+  let current = 0;
+  const interval = setInterval(() => {
+    current += 1;
+    document.getElementById('risk').textContent = `${current}%`;
+    if(current >= score*100) clearInterval(interval);
+  }, 20);
+}
+Mock Attack Simulation
+
+python
+# Add to your backend
+@app.route('/simulate-attack')
+def simulate_attack():
+    return jsonify({
+        'qr_content': 'upi://pay?pa=scammer@ybl&am=10000&tn=URGENT%20ACCOUNT%20VERIFICATION',
+        'is_scam': True
+    })
+Explainable AI Output
+
+python
+def get_explanation(features):
+    return {
+        'reasons': [
+            'Contains shortened URL (bit.ly)' if features['is_shortened'] else '',
+            'Account created 2 days ago' if features['account_age_days'] < 7 else '',
+            'Contains urgent keywords' if features['urgency_keywords'] else ''
+        ]
+    }
+Deployment Checklist
+Add required packages to requirements.txt:
+
+txt
+scikit-learn==1.3.0
+pandas==2.0.3
+flask==2.3.2
+gdown==4.6.6
+Create .replit file:
+
+replit
+run = "python app.py"
+[packager]
+ignoredPaths = ["qr_dataset.csv"]
+Test with:
+
+bash
+python app.py

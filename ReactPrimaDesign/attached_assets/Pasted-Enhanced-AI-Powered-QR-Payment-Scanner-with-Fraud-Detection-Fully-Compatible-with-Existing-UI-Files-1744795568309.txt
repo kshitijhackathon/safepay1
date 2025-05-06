@@ -1,0 +1,222 @@
+Enhanced AI-Powered QR Payment Scanner with Fraud Detection
+(Fully Compatible with Existing UI Files Shown in Screenshots)
+
+1. System Integration Requirements
+A. Strict UI Preservation
+All existing screens (Home, Heatmap, Report, Activity, Account) must remain unchanged visually.
+
+New features (QR scan, risk alerts) must match current design language:
+
+
+Consistent button styles 
+
+B. Seamless Flow Modifications
+Current "Scan QR" Button (Home Screen):
+
+Original: No functionality
+
+Enhanced: Opens camera with AI fraud scan
+
+Transaction History:
+
+Add risk indicator next to each transaction (🟢/🟡/🔴)
+
+Report Scam Screen:
+
+Auto-fill UPI ID when reporting from a high-risk transaction
+
+2. AI/ML-Powered QR Processing Pipeline
+A. Step-by-Step Camera Integration
+When user taps "Scan QR":
+
+Camera Opens (Using device-native APIs):
+
+javascript
+Copy
+// React Native (Expo) - Preserves existing UI stack
+import { CameraView, useCameraPermissions } from 'expo-camera';
+
+function ScanQR() {
+  const [permission, requestPermission] = useCameraPermissions();
+  return (
+    <View style={{ flex: 1 }}>
+      {/* Matches existing header style */}
+      <Text style={styles.header}>Scan QR</Text> 
+      <CameraView 
+        style={styles.camera} 
+        facing="back"
+        onBarcodeScanned={handleQRDetect}
+      />
+    </View>
+  );
+}
+Real-Time QR Decoding (5 FPS analysis):
+
+python
+Copy
+# Backend (FastAPI) - QR Processing
+@app.post("/process-qr")
+async def process_qr(image: UploadFile):
+    img = cv2.imdecode(np.frombuffer(await image.read(), np.uint8), cv2.IMREAD_COLOR)
+    upi_id = extract_upi_from_qr(img)  # Uses ZBar+OpenCV
+    risk = predict_risk(upi_id)  # ML Model
+    return {"upi": upi_id, "risk_score": risk}
+B. Enhanced Fraud Detection Models
+Three-Layer Verification System:
+
+Layer	Technology	Purpose
+Static Analysis	Random Forest (Scikit-learn)	Checks UPI ID against scam databases
+Behavioral AI	LSTM (TensorFlow)	Analyzes transaction sequence patterns
+Network Graph	PyTorch Geometric	Detects money mule networks
+Training Data Structure:
+
+python
+Copy
+# Sample MongoDB Document for Training
+{
+  "upi_id": "scammer123@upi",
+  "reports": 17,
+  "linked_devices": ["iPhone12,3", "OnePlus8"],
+  "transaction_graph": {
+    "nodes": ["user1", "user2", "mule_account"],
+    "edges": [{"source": "user1", "target": "mule_account", "amount": 5000}]
+  }
+}
+3. Risk Thresholds & User Flows
+A. Dynamic Risk Responses
+Risk %	UI Action	Backend Process
+0-30%	✅ Green checkmark	Direct payment redirection
+30-75%	🟡 Yellow warning modal	Logs event for manual review
+75-100%	🔴 Full-screen block + "Report" button	Freezes account for 1 hour
+Warning Modal Design (Matches Existing UI):
+
+javascript
+Copy
+<Modal transparent={true}>
+  <View style={styles.warningContainer}>
+    <Text style={styles.warningHeader}>Caution!</Text>
+    <Text>This recipient has {riskScore}% scam risk</Text>
+    <Button 
+      title="Proceed Carefully" 
+      onPress={handleProceed}
+      color="#FFA500"  // Matches heatmap yellow
+    />
+  </View>
+</Modal>
+B. Payment App Redirection
+Modified Deep Linking (Preserves User Preferences):
+
+javascript
+Copy
+// Loads user's preferred app from existing settings
+const handlePayment = () => {
+  const preferredApp = getUserPreference(); // From Account screen
+  const apps = {
+    gpay: tez://upi/pay?pa=${upiId}&am=${amount},
+    phonepe: phonepe://pay?upiId=${upiId}&amount=${amount},
+    paytm: paytmmp://pay?upi=${upiId}&amt=${amount}
+  };
+  Linking.openURL(apps[preferredApp || 'gpay']); 
+};
+4. Backend Services Architecture
+A. Microservice Design
+mermaid
+Copy
+graph TD
+    A[Mobile App] --> B(API Gateway)
+    B --> C[QR Service]
+    B --> D[Risk Engine]
+    B --> E[Payment Router]
+    C --> F{MongoDB}
+    D --> G[Redis Cache]
+    E --> H[UPI Network]
+B. Critical API Endpoints
+Endpoint	Method	Request	Response
+/api/v1/scan	POST	{image: File, device_id: String}	{upi: String, risk: Float}
+/api/v1/payment	POST	{upi: String, amount: Float}	{redirect_url: String}
+/api/v1/report	POST	{upi: String, reason: String}	{case_id: String}
+5. Security Enhancements
+A. QR Tamper Protection
+python
+Copy
+# Digital Signature Verification
+def verify_qr_signature(qr_data: str):
+    try:
+        decoded = jwt.decode(qr_data, PUBLIC_KEY, algorithms=["RS256"])
+        return decoded["upi_id"]
+    except:
+        return None  # Invalid QR
+B. Device Fingerprinting
+javascript
+Copy
+// React Native Device Info
+import DeviceInfo from 'react-native-device-info';
+
+const deviceHash = DeviceInfo.getUniqueId() + 
+                   DeviceInfo.getSystemVersion();
+6. Testing & QA Plan
+A. Test Cases
+QR Scanning
+
+Test with printed UPI QR codes
+
+Test with screen glare/partial visibility
+
+Risk Thresholds
+
+Verify 75%+ risk blocks payment
+
+Test edge cases (74.9% vs 75.1%)
+
+UI Consistency
+
+Pixel-match modals against existing screens
+
+Verify font sizes/spacing
+
+B. Performance Benchmarks
+Metric	Target
+QR decode time	< 500ms
+Risk prediction latency	< 1s
+Payment redirection	< 300ms
+7. Deployment Strategy
+A. Phased Rollout
+Stage 1: Shadow mode (scan but don't block)
+
+Stage 2: 5% user base with real warnings
+
+Stage 3: Full deployment
+
+B. Monitoring
+Grafana Dashboard Metrics:
+
+False positive rate
+
+Average risk score
+
+Payment completion rate
+
+8. Compliance Requirements
+RBI Guidelines:
+
+Store UPI IDs encrypted (AES-256)
+
+6-month transaction audit trail
+
+GDPR:
+
+Right to explanation for blocked payments
+
+Final Deliverables
+✅ Camera integration matching existing UI
+✅ Real-time risk scoring (<1s response)
+✅ Seamless payment app handoff
+✅ Enhanced fraud detection models
+
+Key Libraries Added:
+
+Frontend: expo-camera, react-native-device-info
+
+Backend: pyzbar, tensorflow-serving
+
+Security: python-jose (JWT), cryptography

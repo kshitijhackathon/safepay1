@@ -1,0 +1,91 @@
+# Git
+.git
+.gitignore
+
+# Node.js
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+.venv/
+
+# Logs
+logs
+*.log
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Build outputs
+dist/
+build/
+out/
+
+# ML model temporary files
+model_cache/
+prediction_cache/
+audio_temp/
+
+# Large files
+*.mp4
+*.wav
+*.mp3
+*.avi
+*.webm
+
+# Testing
+coverage
+.nyc_output
+
+# Dependency directories
+.pnp
+.pnp.js
+
+# Docker specific
+.dockerignore
+Dockerfile
+docker-compose.yml
+
+# Documentation
+README.md
+VSCODE_DEVELOPMENT.md
+LICENSE
+SECURITY.md
+CONTRIBUTING.md

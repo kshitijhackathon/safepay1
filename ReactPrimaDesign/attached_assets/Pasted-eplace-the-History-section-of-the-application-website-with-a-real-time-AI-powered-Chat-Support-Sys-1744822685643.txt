@@ -1,0 +1,72 @@
+eplace the "History" section of the application/website with a real-time AI-powered Chat Support System that helps users prevent and respond to online financial frauds. This system will be powered using OpenAI's paid API, which I will provide when needed.
+
+🔐 Purpose and Use Cases
+The main goal is to build a Fraud Report Support Chatbot that offers educational and action-oriented guidance to users who may be victims of or are suspicious of fraudulent activities. The chatbot will serve as a 24x7 Helpdesk and act as the first point of contact in emergency or confusing situations.
+
+🔧 Core Functionalities
+Educational Support:
+
+Teach users how to report UPI scams
+
+Explain the purpose and usage of the 1930 national cyber helpline
+
+Guide users on how to lodge an FIR both online and offline
+
+Emergency Use Cases:
+
+If a user types: “Mere account se paisa chala gaya” or “Money was deducted from my account”, the chatbot should immediately reply:
+
+“Please call 1930 immediately and also contact your bank.”
+
+General Query Resolution:
+
+When users ask:
+
+“Is this link safe?”
+
+“I received a refund message—what should I do?”
+
+“I think someone is trying to scam me.”
+
+The chatbot should provide relevant, safe, and step-by-step guidance.
+
+Language Support:
+
+The chatbot should support Hindi, English, and at least two regional languages (such as Marathi, Tamil, Bengali, etc.), making it accessible and understandable to a wider audience.
+
+Conversational Flow:
+
+The chatbot should use natural language processing to handle casual phrasing and common user queries.
+
+Support both typed and voice input (optional/advanced stage).
+
+User-Friendly Interface:
+
+Include quick reply buttons like:
+
+Report UPI Scam
+
+Call 1930
+
+Lodge FIR
+
+Verify Link Safety
+
+Option to escalate to a human support agent if needed.
+
+🧠 Technology Stack Suggestion
+Backend AI Model: OpenAI GPT-4 Turbo (with function calling)
+
+Frontend Integration: Chat UI component on your web/app dashboard
+
+Language Handling: Integrate translation layer for multilingual support (Google Translate API or inbuilt OpenAI translation)
+
+✅ Action Items
+Replace "History" section with this AI chatbot interface
+
+I’ll provide the OpenAI API Key when development begins
+
+Prepare chatbot responses for at least 10-15 fraud-related scenarios
+
+Add a feedback/rating system to evaluate chatbot responses
+

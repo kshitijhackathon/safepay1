@@ -1,0 +1,40 @@
+Replit AI Prompt – Dark Mode Toggle Feature for React + Tailwind Project
+vbnet
+Copy
+Edit
+Build a fully working dark mode toggle feature in a React + TypeScript + Tailwind CSS project hosted on Replit. The theme toggle must be integrated cleanly into an existing settings page UI, like this:
+
+🔹 Toggle switch next to label: "Dark Mode"  
+🔹 When toggled, the background, text, and component colors should switch between dark and light themes.  
+🔹 Use Tailwind's class-based `darkMode: 'class'` setup.  
+🔹 Apply the dark mode theme using the `class="dark"` on the root `<html>` element.  
+🔹 Ensure smooth transitions for background and text color changes.  
+🔹 The theme preference must be saved in `localStorage` and should persist on page refresh or revisit.  
+🔹 Create a global React context (`ThemeContext`) to handle the theme across the app.  
+🔹 Provide a `ThemeToggle` component using `@headlessui/react`'s `Switch` for the toggle switch UI.  
+🔹 Build a custom `useTheme` hook for easy access to `theme` and `toggleTheme`.  
+🔹 The UI should update instantly with no reloads or flicker.  
+🔹 Make sure the `ThemeProvider` wraps the entire app in `App.tsx`.  
+🔹 Update the settings page to include a labeled toggle switch under an “Appearance” section.  
+🔹 Use semantic, accessible HTML and responsive styling with Tailwind.  
+🔹 All code must be compatible with Replit's environment and use relative imports.
+
+Optional bonus (only if time permits):  
+- Detect system theme using `window.matchMedia` on first load if no theme is saved in localStorage.
+
+Output should include:
+1. `tailwind.config.js` dark mode setting.  
+2. `ThemeContext.tsx` file with full logic.  
+3. `useTheme.ts` hook.  
+4. `ThemeToggle.tsx` component.  
+5. Updated `App.tsx` with context provider.  
+6. Sample `SettingsPage.tsx` showing the toggle.  
+7. Ensure it works out of the box on Replit.
+
+Give clean, well-commented code with clear folder structure and file names.
+🟡 You can tweak the last section if:
+You want the theme to sync across tabs (via storage event).
+
+You want dark mode to apply immediately (no flicker) using SSR or hydration-safe logic.
+
+You want animated transitions or sound effects on toggle.

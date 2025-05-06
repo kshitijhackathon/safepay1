@@ -1,0 +1,90 @@
+To migrate from OpenAI API to Groq API in your Replit project, follow these steps:
+
+1. Update Environment Variables
+Prompt to Replit:
+"Add GROQ_API_KEY to Secrets (Environment Variables)"
+
+Steps:
+
+Get API key from Groq Cloud
+
+In Replit:
+
+Click Tools → Secrets
+
+Add:
+Key: GROQ_API_KEY
+Value: [your-api-key]
+
+2. Install Groq Client
+Update your requirements.txt or install via Shell:
+
+bash
+pip install groq
+3. Code Changes
+Replace OpenAI code with Groq equivalents:
+
+Before (OpenAI):
+python
+from openai import OpenAI
+
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+response = client.chat.completions.create(
+  model="gpt-3.5-turbo",
+  messages=[{"role": "user", "content": "Hello!"}]
+)
+
+print(response.choices[0].message.content)
+After (Groq):
+python
+from groq import Groq
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+response = client.chat.completions.create(
+  model="mixtral-8x7b-32768",  # Example model
+  messages=[{"role": "user", "content": "Hello!"}],
+  temperature=0.5,
+  max_tokens=1024
+)
+
+print(response.choices[0].message.content)
+4. Key Differences to Address
+Models: Use Groq-supported models (e.g., mixtral-8x7b-32768, llama2-70b-4096).
+
+Parameters: Some parameters may differ (check Groq Docs).
+
+Response Structure: Verify the JSON structure in responses.
+
+5. Common Groq Models
+python
+# For high-speed inference:
+model = "mixtral-8x7b-32768"  
+
+# For longer context windows:
+model = "llama2-70b-4096"
+6. Error Handling
+Add checks for Groq-specific errors:
+
+python
+try:
+    response = client.chat.completions.create(...)
+except Exception as e:
+    print(f"Groq API Error: {e}")
+7. Testing
+Test all API calls thoroughly.
+
+Validate output formatting.
+
+Monitor Groq's rate limits (different from OpenAI).
+
+8. Cleanup
+Remove OpenAI dependencies:
+
+bash
+pip uninstall openai
+Delete OpenAI API key from Replit Secrets.
+
+9. Documentation
+Refer to Groq's official documentation for advanced usage:
