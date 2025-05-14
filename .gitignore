@@ -48,3 +48,4 @@ cache/
 prediction_cache/
 *.log
 mydata.zip
+.vercel
