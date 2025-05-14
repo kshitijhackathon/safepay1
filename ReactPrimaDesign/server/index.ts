@@ -43,59 +43,45 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
       if (logLine.length > 80) {
         logLine = logLine.slice(0, 79) + "…";
       }
-
       log(logLine);
     }
   });
-
   next();
 });
 
-(async () => {
-  const server = await registerRoutes(app);
+// Initialize routes
+registerRoutes(app);
 
-  // Error handling middleware
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
-    res.status(status).json({ message });
-    console.error(err);
-  });
+// Error handling middleware
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ message });
+  console.error(err);
+});
 
-  if (process.env.NODE_ENV === "development") {
-    await setupVite(app, server);
-  } else {
-    // Serve static files from the dist directory in production
-    app.use(express.static(path.join(process.cwd(), "dist")));
+if (process.env.NODE_ENV === "development") {
+  setupVite(app);
+} else {
+  // Serve static files from the dist directory in production
+  app.use(express.static(path.join(process.cwd(), "dist")));
 
-    // Handle client-side routing
-    app.get("/*", (req, res, next) => {
-      if (req.path.startsWith("/api")) {
-        return next();
+  // Handle client-side routing
+  app.get("/*", (req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
+    res.sendFile(path.join(process.cwd(), "dist", "index.html"), (err) => {
+      if (err) {
+        console.error("Error sending index.html:", err);
+        res.status(500).send("Error loading application");
       }
-      res.sendFile(path.join(process.cwd(), "dist", "index.html"), (err) => {
-        if (err) {
-          console.error("Error sending index.html:", err);
-          res.status(500).send("Error loading application");
-        }
-      });
     });
-  }
+  });
+}
 
-  const PORT = process.env.PORT || 3000;
-  const HOST = process.env.HOST || "0.0.0.0";
-
-  if (process.env.VERCEL) {
-    // Export the Express app for Vercel
-    module.exports = app;
-  } else {
-    // Start the server locally
-    server.listen(PORT, HOST, () => {
-      log(`[express] Server running at http://${HOST}:${PORT}`);
-    });
-  }
-})();
+// Export the Express app for Vercel
+export default app;
